@@ -10,5 +10,6 @@ CMD ["--help"]
 FROM debian:bookworm-slim
 WORKDIR /app
 COPY --from=build /app/target/release/merge-baysor /app/
+ENV PATH="${PATH}:/app/"
 ENTRYPOINT ["/app/merge-baysor"]
 CMD ["--help"]
