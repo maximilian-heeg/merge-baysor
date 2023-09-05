@@ -6,7 +6,7 @@ use std::fs::File;
 
 /// Merge segmentations results from different runs, e.g. FOV
 /// into a single segmetation file. This is done by combining cells if the intersection over union
-/// is bigger than a set threshold. 
+/// is bigger than a set threshold.
 /// This approach is similar to the stichting that is done in cellpose.
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None, verbatim_doc_comment)]
@@ -31,7 +31,6 @@ pub struct Args {
     outfile: String,
 }
 
-
 #[derive(Debug)]
 struct MyError(String);
 
@@ -42,16 +41,9 @@ impl fmt::Display for MyError {
 }
 impl Error for MyError {}
 
-
 /// The main logic of that program lies here.
 /// It reads in the files, reduces the list by merging the layers, and the combines it with the additional columns to create a output file.
 pub fn run(args: Args) -> Result<(), Box<dyn Error>> {
-    if args.files.len() < 2 {
-        return Err(Box::new(MyError(
-            "Not enought files to merge. Please provide at least two files.".into(),
-        )));
-    }
-
     // Read in all the layers
     // TODO: Improvement. Make sure that cell_id are unique. They should be Baysor created cell_ids based in the uuid of the process.
     println!("Read files");
@@ -230,7 +222,10 @@ fn find_cells_to_merge(df_iou: LazyFrame, threshold: f32) -> LazyFrame {
 
 /// Build a list of unique transcripts from all passed subsets
 /// Include additional columns
-fn unique_transcripts(files: &Vec<String>, columns: &Vec<String>) -> Result<LazyFrame, Box<dyn Error>> {
+fn unique_transcripts(
+    files: &Vec<String>,
+    columns: &Vec<String>,
+) -> Result<LazyFrame, Box<dyn Error>> {
     let result: Vec<LazyFrame> = files
         .iter()
         .map(|v| {
@@ -238,10 +233,7 @@ fn unique_transcripts(files: &Vec<String>, columns: &Vec<String>) -> Result<Lazy
                 .has_header(true)
                 .finish()
                 .unwrap()
-                .select(&[
-                    col("transcript_id"),
-                    cols(columns),
-                ])
+                .select(&[col("transcript_id"), cols(columns)])
         })
         .collect();
 
